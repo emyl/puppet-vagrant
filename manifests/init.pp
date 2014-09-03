@@ -20,8 +20,7 @@
 #
 # Emiliano Ticci <emiticci@gmail.com>
 #
-class vagrant($version = get_latest_vagrant_version()) {
-
+class vagrant ($version = get_latest_vagrant_version()) {
   # The $old_versions hash stores git tag references
   # for versions >= 1.0 and < 1.4
   $old_versions = {
@@ -49,47 +48,47 @@ class vagrant($version = get_latest_vagrant_version()) {
 
   # Determine the base url (it depends on the version)
   if versioncmp($version, '1.4.0') >= 0 {
-    $base_url       = 'https://dl.bintray.com/mitchellh/vagrant'
-    $darwin_prefix  = 'vagrant_'
+    $base_url = 'https://dl.bintray.com/mitchellh/vagrant'
+    $darwin_prefix = 'vagrant_'
     $windows_prefix = 'vagrant_'
   } else {
     $base_url = "http://files.vagrantup.com/packages/${old_versions[$version]}"
-    $darwin_prefix  = 'Vagrant-'
+    $darwin_prefix = 'Vagrant-'
     $windows_prefix = 'Vagrant_'
   }
 
   # Finally determine download url and provider
   case $::operatingsystem {
-    centos, redhat, fedora: {
+    centos, redhat, fedora : {
       case $::architecture {
-        x86_64, amd64: {
+        x86_64, amd64 : {
           $vagrant_source = "${base_url}/vagrant_${version}_x86_64.rpm"
           $vagrant_provider = 'rpm'
         }
-        i386: {
+        i386          : {
           $vagrant_source = "${base_url}/vagrant_${version}_i686.rpm"
           $vagrant_provider = 'rpm'
         }
-        default: {
+        default       : {
           fail("Unrecognized architecture: ${::architecture}")
         }
       }
     }
-    Darwin: {
-      $vagrant_source   = "${base_url}/${darwin_prefix}${version}.dmg"
+    Darwin                 : {
+      $vagrant_source = "${base_url}/${darwin_prefix}${version}.dmg"
       $vagrant_provider = 'pkgdmg'
     }
-    debian, ubuntu: {
+    debian, ubuntu         : {
       case $::architecture {
-        x86_64, amd64: {
+        x86_64, amd64 : {
           $vagrant_filename = "vagrant_${version}_x86_64.deb"
           $vagrant_provider = 'dpkg'
         }
-        i386: {
+        i386          : {
           $vagrant_filename = "vagrant_${version}_i686.deb"
           $vagrant_provider = 'dpkg'
         }
-        default: {
+        default       : {
           fail("Unrecognized architecture: ${::architecture}")
         }
       }
@@ -99,13 +98,12 @@ class vagrant($version = get_latest_vagrant_version()) {
       exec { 'vagrant-download':
         command => "/usr/bin/wget -O ${vagrant_source} ${base_url}/${vagrant_filename}",
         creates => $vagrant_source,
-        timeout => 0,
-        before  => Package["vagrant-${version}"]
+        timeout => 0
       }
     }
-    windows: {
+    windows                : {
       $vagrant_filename = "${windows_prefix}${version}.msi"
-      $vagrant_source   = "${::ostempdir}\\${vagrant_filename}"
+      $vagrant_source = "${::ostempdir}\\${vagrant_filename}"
       $vagrant_provider = 'windows'
 
       $download_command = "(New-Object Net.WebClient).DownloadFile('${base_url}/${vagrant_filename}', '${vagrant_source}')"
@@ -114,18 +112,18 @@ class vagrant($version = get_latest_vagrant_version()) {
         command => "C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe -ExecutionPolicy Unrestricted -Command \"${download_command}\"",
         creates => $vagrant_source,
         timeout => 0,
-        before  => Package["vagrant-${version}"],
       }
     }
-    default: {
+    default                : {
       fail("Unrecognized operating system: ${::operatingsystem}")
     }
   }
 
-  package { "vagrant-${version}":
-    ensure   => present,
+  package { 'vagrant':
+    ensure   => latest,
     provider => $vagrant_provider,
-    source   => $vagrant_source
+    source   => $vagrant_source,
+    require  => Exec['vagrant-download']
   }
 
 }
