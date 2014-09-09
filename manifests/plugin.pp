@@ -15,7 +15,7 @@ define vagrant::plugin($plugin_name = $title, $user = $::id) {
   include vagrant::params
 
   vagrant::command { "Install plugin ${plugin_name} for ${user}":
-    command => "${vagrant::params::binary} plugin install ${plugin_name}"
+    command => "${vagrant::params::binary} plugin install ${plugin_name}",
     user => $user
   }
 }
