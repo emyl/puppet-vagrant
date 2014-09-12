@@ -79,7 +79,7 @@ class vagrant($version = get_latest_vagrant_version()) {
       $vagrant_source   = "${base_url}/${darwin_prefix}${version}.dmg"
       $vagrant_provider = 'pkgdmg'
     }
-    debian, ubuntu: {
+    debian, ubuntu, linuxmint: {
       case $::architecture {
         x86_64, amd64: {
           $vagrant_filename = "vagrant_${version}_x86_64.deb"

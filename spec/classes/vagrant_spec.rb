@@ -46,7 +46,7 @@ describe 'vagrant' do
     end
   end
   context 'deb' do
-    ['debian', 'ubuntu'].each do |distro|
+    ['debian', 'ubuntu', 'linuxmint'].each do |distro|
       context 'x64' do
         ['x86_64', 'amd64'].each do |arch|
           let(:facts) { { :architecture => arch, :operatingsystem => distro, :ostempdir => '/tmp' } }

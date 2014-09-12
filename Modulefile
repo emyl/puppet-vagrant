@@ -9,7 +9,7 @@ This module installs vagrant and, optionally, vagrant boxes and plugins.
 Works on all the platforms supported by vagrant:
 
 - Centos/Red Hat
-- Debian/Ubuntu
+- Debian/Ubuntu/LinuxMint
 - Mac OS X
 - Windows
 
