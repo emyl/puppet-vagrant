@@ -33,8 +33,9 @@ define vagrant::box(
     $box_unless  = "${vagrant::params::binary} box list | ${vagrant::params::grep} \"${box_name}\" | ${vagrant::params::grep} \"${box_provider}\""
   }
 
-  vagrant::command { $box_command:
-    unless => $box_unless,
-    user   => $user
+  vagrant::command { "Install box ${box_name} for ${user}":
+    command => $box_command,
+    unless  => $box_unless,
+    user    => $user
   }
 }
