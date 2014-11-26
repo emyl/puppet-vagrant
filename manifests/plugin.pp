@@ -13,8 +13,8 @@
 #
 define vagrant::plugin(
   $plugin_name    = $title,
-  $user           = $::id
-  $plugin_version = undef,
+  $user           = $::id,
+  $plugin_version = undef
 ) {
   include vagrant::params
 
