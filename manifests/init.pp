@@ -62,18 +62,33 @@ class vagrant($version = get_latest_vagrant_version()) {
   case $::operatingsystem {
     centos, redhat, fedora: {
       case $::architecture {
+        # older versions of RPM don't support HTTP redirects and so we download
+        # the RPM file and install it from a local directory (as for debian
+        # versions).
         x86_64, amd64: {
-          $vagrant_source = "${base_url}/vagrant_${version}_x86_64.rpm"
+          $vagrant_filename = "vagrant_${version}_x86_64.rpm"
           $vagrant_provider = 'rpm'
         }
         i386: {
-          $vagrant_source = "${base_url}/vagrant_${version}_i686.rpm"
+          $vagrant_filename = "vagrant_${version}_i686.rpm"
           $vagrant_provider = 'rpm'
         }
         default: {
           fail("Unrecognized architecture: ${::architecture}")
         }
       }
+
+      $vagrant_url = "${base_url}/${vagrant_filename}"
+      $vagrant_source = "${::ostempdir}/${vagrant_filename}"
+
+      exec { 'vagrant-download':
+        command => "/usr/bin/wget -O ${vagrant_source} ${vagrant_url}",
+        creates => $vagrant_source,
+        timeout => 0,
+        unless  => "/bin/rpm -qa | grep 'vagrant-${version}' &> /dev/null",
+        before  => Package["vagrant-${version}"]
+      }
+
     }
     Darwin: {
       $vagrant_source   = "${base_url}/${darwin_prefix}${version}.dmg"
