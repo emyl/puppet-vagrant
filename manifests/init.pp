@@ -94,7 +94,7 @@ class vagrant($version = get_latest_vagrant_version()) {
         }
       }
 
-      $vagrant_source = "${::ostempdir}/${vagrant_filename}"
+      $vagrant_source = "/var/tmp/${vagrant_filename}"
 
       exec { 'vagrant-download':
         command => "/usr/bin/wget -O ${vagrant_source} ${base_url}/${vagrant_filename}",
